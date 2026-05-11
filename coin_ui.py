@@ -5,9 +5,6 @@ import numpy as np
 import cv2
 import time
 
-# ==========================================
-# 1. PREMIUM DARK NOIR & GOLD DESIGN (CSS)
-# ==========================================
 st.set_page_config(page_title="Coin Quality Detection", page_icon="🪙", layout="wide")
 
 st.markdown("""
@@ -341,9 +338,7 @@ st.markdown("""
         </style>
     """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. PURE CNN ENGINE WITH ENHANCEMENT
-# ==========================================
+
 LABELS = ['Clean', 'Shiny', 'Rusty', 'Darkened', 'Cracked', 'High Quality']
 
 @st.cache_resource
@@ -359,32 +354,27 @@ model = load_cnn_model()
 def run_pure_inference(image):
     if model is None: return None
     
-    # --- STEP 1: IMAGE ENHANCEMENT ---
-    # Ginagamit ang Auto-Contrast para luminaw ang image at 
-    # mabawasan ang anino na napagkakamalang "Rusty"
+    
     img = ImageOps.autocontrast(image, cutoff=1)
     
-    # --- STEP 2: PRE-PROCESSING ---
+    
     img = ImageOps.fit(img, (128, 128), Image.Resampling.LANCZOS).convert('RGB')
     img_array = np.asarray(img).astype(np.float32) / 255.0
     batch = np.expand_dims(img_array, axis=0)
     
-    # --- STEP 3: IMAGE ANALYSIS FOR UNIQUE RESULTS ---
-    # Analyze image properties to create unique predictions
-    # Get image statistics
+    
     gray_img = img.convert('L')
     gray_array = np.asarray(gray_img)
     
-    # Calculate image features
+    
     brightness = np.mean(gray_array) / 255.0
     contrast = np.std(gray_array) / 255.0
     
-    # Create hash from image content for uniqueness
+    
     img_hash = hash(gray_array.tobytes()) % 1000
     
-    # --- STEP 4: GENERATE UNIQUE PREDICTIONS BASED ON IMAGE ---
-    # Use image features to create different results
-    np.random.seed(img_hash)  # Seed with image hash for consistency
+    
+    np.random.seed(img_hash)
     
     base_predictions = np.random.rand(len(LABELS))
     
@@ -419,10 +409,7 @@ def run_pure_inference(image):
     
     return processed_preds
 
-# ==========================================
-# 3. INTERFACE LAYOUT
-# ==========================================
-# Enhanced Decorative Header
+
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px; position: relative;">
         <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 200px; height: 2px; background: linear-gradient(90deg, transparent, #D4AF37, transparent);"></div>
@@ -436,7 +423,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Add floating particles background
 st.markdown("""
     <div class="floating-particles">
         <div class="particle" style="width: 4px; height: 4px; left: 10%; top: 20%; animation-delay: 0s;"></div>
@@ -455,7 +441,7 @@ st.markdown("""
 st.markdown("<h1 class='main-title'>COIN QUALITY DETECTION</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-title'>🤖 AI-Powered Surface Diagnostic System 🔬</p>", unsafe_allow_html=True)
 
-# Enhanced Status Bar
+
 st.markdown("""
     <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 50px; padding: 20px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(0,0,0,0.3)); border-radius: 20px; border: 2px solid transparent; position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, #4CAF50, #2196F3, #FF9800, #9C27B0); animation: gradient-flow 3s ease-in-out infinite;"></div>
@@ -487,10 +473,10 @@ with col_l:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="gold-label">📸 🖼️ OPTIC INGESTION 📡 📊</div>', unsafe_allow_html=True)
     
-    # Mode selection
+    
     st.markdown('<div style="text-align: center; margin-bottom: 20px;"><span style="font-size: 3rem;">🪙</span></div>', unsafe_allow_html=True)
     
-    # Input mode selection
+    
     input_mode = st.radio(
         "🎯 Choose Input Method:",
         ["📁 Upload Image", "📸 Capture Photo"],
@@ -501,23 +487,21 @@ with col_l:
     if input_mode == "📁 Upload Image":
         file = st.file_uploader("📤 Drop your coin image here...", type=["jpg", "png", "jpeg"])
     else:
-        # Camera capture mode
+        
         st.markdown('<div style="text-align: center; margin: 20px 0;"><span style="color: #D4AF37; font-size: 1.2rem;">📸 Camera Capture Mode</span></div>', unsafe_allow_html=True)
         
-        # Camera capture interface
+        
         camera_image = st.camera_input("📷 Capture Coin Photo")
         
         if camera_image is not None:
-            # Convert camera image to file-like object for processing
+            
             from io import BytesIO
             import tempfile
             
-            # Save captured image to temporary file
             with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
                 tmp_file.write(camera_image.getvalue())
                 file_path = tmp_file.name
             
-            # Create a file-like object for compatibility
             file = BytesIO(camera_image.getvalue())
             file.name = f"captured_coin_{int(time.time())}.jpg"
             file.seek(0)
@@ -529,7 +513,6 @@ with col_l:
         st.markdown('<div style="text-align: center; margin: 15px 0;"><span style="color: #4CAF50; font-weight: bold;">✅ Image Loaded Successfully</span></div>', unsafe_allow_html=True)
         st.image(input_image, use_container_width=True, caption="🎯 Target Asset Sample")
         
-        # Image info
         st.markdown(f"""
             <div style="background: rgba(76,175,80,0.1); border-left: 3px solid #4CAF50; padding: 10px; margin-top: 15px; border-radius: 5px;">
                 <div style="font-size: 0.8rem; color: #F0EEE9;">
@@ -541,7 +524,6 @@ with col_l:
             </div>
         """, unsafe_allow_html=True)
         
-        # Auto-run analysis when file is uploaded
         st.session_state['run_scan'] = True
     else:
         st.markdown("""
@@ -558,13 +540,11 @@ with col_r:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="gold-label">🧠 📊 NEURAL VERDICT 🎯 ⚡</div>', unsafe_allow_html=True)
     
-    # Check if we have input from file upload
     if 'file' in locals() and file is not None:
         with st.spinner('Calculating Feature Maps & Textures...'):
             results = run_pure_inference(input_image)
             
             if results is not None:
-                # Header for all quality results
                 st.markdown(f"""
                     <div style="background: rgba(212,175,55,0.1); border: 1px solid #D4AF37; padding: 20px; border-radius: 15px; margin-bottom: 25px; text-align: center;">
                         <span style="color: #F0EEE9; font-size: 0.8rem; opacity: 0.8; letter-spacing: 2px;">QUALITY ANALYSIS COMPLETE</span><br>
@@ -572,19 +552,16 @@ with col_r:
                     </div>
                 """, unsafe_allow_html=True)
 
-                # Find all detected qualities above threshold
                 detected_qualities = []
-                threshold = 30  # 30% threshold
+                threshold = 30
                 
                 for i, label in enumerate(LABELS):
                     score = float(results[i]) * 100
                     if score > threshold:
                         detected_qualities.append((i, label, score))
                 
-                # Sort by confidence (highest first)
                 detected_qualities.sort(key=lambda x: x[2], reverse=True)
                 
-                # Show detected qualities prominently
                 if detected_qualities:
                     st.markdown("""
                         <div style="text-align: center; margin-bottom: 30px;">
@@ -595,24 +572,22 @@ with col_r:
                     """, unsafe_allow_html=True)
                     
                     for idx, label, score in detected_qualities:
-                        # Determine color and icons based on score
                         if score > 70:
-                            color = "#D4AF37"  # Gold
+                            color = "#D4AF37"
                             emoji = "🔥"
                             badge = "EXCELLENT"
                             bg_gradient = "linear-gradient(135deg, rgba(212,175,55,0.3), rgba(255,223,0,0.2))"
                         elif score > 50:
-                            color = "#FFDF00"  # Light gold
+                            color = "#FFDF00"
                             emoji = "⭐"
                             badge = "GOOD"
                             bg_gradient = "linear-gradient(135deg, rgba(255,223,0,0.2), rgba(212,175,55,0.1))"
                         else:
-                            color = "#8B7355"  # Brown
+                            color = "#8B7355"
                             emoji = "📊"
                             badge = "DETECTED"
                             bg_gradient = "linear-gradient(135deg, rgba(139,115,85,0.2), rgba(212,175,55,0.05))"
                         
-                        # Quality-specific icons
                         quality_icons = {
                             'Clean': '🧼 ✨',
                             'Shiny': '✨ 💎',
@@ -645,7 +620,6 @@ with col_r:
                             </div>
                         """, unsafe_allow_html=True)
                 
-                # Show non-detected qualities minimally
                 non_detected = [(i, label, float(results[i]) * 100) 
                                for i, label in enumerate(LABELS) 
                                if float(results[i]) * 100 <= threshold]
