@@ -487,9 +487,42 @@ with col_l:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="gold-label">📸 🖼️ OPTIC INGESTION 📡 📊</div>', unsafe_allow_html=True)
     
-    # Enhanced file uploader with icon
+    # Mode selection
     st.markdown('<div style="text-align: center; margin-bottom: 20px;"><span style="font-size: 3rem;">🪙</span></div>', unsafe_allow_html=True)
-    file = st.file_uploader("📤 Drop your coin image here...", type=["jpg", "png", "jpeg"])
+    
+    # Input mode selection
+    input_mode = st.radio(
+        "🎯 Choose Input Method:",
+        ["📁 Upload Image", "📸 Capture Photo"],
+        key="input_mode",
+        horizontal=True
+    )
+    
+    if input_mode == "📁 Upload Image":
+        file = st.file_uploader("📤 Drop your coin image here...", type=["jpg", "png", "jpeg"])
+    else:
+        # Camera capture mode
+        st.markdown('<div style="text-align: center; margin: 20px 0;"><span style="color: #D4AF37; font-size: 1.2rem;">📸 Camera Capture Mode</span></div>', unsafe_allow_html=True)
+        
+        # Camera capture interface
+        camera_image = st.camera_input("📷 Capture Coin Photo")
+        
+        if camera_image is not None:
+            # Convert camera image to file-like object for processing
+            from io import BytesIO
+            import tempfile
+            
+            # Save captured image to temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
+                tmp_file.write(camera_image.getvalue())
+                file_path = tmp_file.name
+            
+            # Create a file-like object for compatibility
+            file = BytesIO(camera_image.getvalue())
+            file.name = f"captured_coin_{int(time.time())}.jpg"
+            file.seek(0)
+        else:
+            file = None
     
     if file:
         input_image = Image.open(file)
