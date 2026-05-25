@@ -1,2 +1,10 @@
 /coin_model_multilabel_v121.h5
 /metadata.csv
+
+/old/
+/old2/
+/old3/
+/config.json
+/*.keras
+/*.h5
+/metadata.json
